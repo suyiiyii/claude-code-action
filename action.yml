@@ -37,6 +37,10 @@ inputs:
     description: "Instructions for Claude. Can be a direct prompt or custom template."
     required: false
     default: ""
+  custom_instructions:
+    description: "Additional instructions to inject into tag mode prompts (between system prompt and user request). Only used in tag mode when triggered by @claude mentions. Does not trigger agent mode."
+    required: false
+    default: ""
   settings:
     description: "Claude Code settings as JSON string or path to settings JSON file"
     required: false
@@ -173,6 +177,7 @@ runs:
       env:
         MODE: ${{ inputs.mode }}
         PROMPT: ${{ inputs.prompt }}
+        CUSTOM_INSTRUCTIONS: ${{ inputs.custom_instructions }}
         TRIGGER_PHRASE: ${{ inputs.trigger_phrase }}
         ASSIGNEE_TRIGGER: ${{ inputs.assignee_trigger }}
         LABEL_TRIGGER: ${{ inputs.label_trigger }}

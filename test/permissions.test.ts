@@ -62,6 +62,7 @@ describe("checkWritePermissions", () => {
     isPR: false,
     inputs: {
       prompt: "",
+      customInstructions: "",
       triggerPhrase: "@claude",
       assigneeTrigger: "",
       labelTrigger: "",

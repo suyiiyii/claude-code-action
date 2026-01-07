@@ -220,25 +220,37 @@ export const tagMode: Mode = {
     githubData: FetchDataResult,
     useCommitSigning: boolean,
   ): string {
-    const defaultPrompt = generateDefaultPrompt(
+    // Get the base prompt (respects USE_SIMPLE_PROMPT env var)
+    let basePrompt = generateDefaultPrompt(
       context,
       githubData,
       useCommitSigning,
     );
 
-    // If a custom prompt is provided, inject it into the tag mode prompt
-    if (context.githubContext?.inputs?.prompt) {
-      return (
-        defaultPrompt +
-        `
+    // If custom instructions are provided, inject them BEFORE <trigger_comment>
+    if (context.githubContext?.inputs?.customInstructions) {
+      const customInstructions = `
 
 <custom_instructions>
-${context.githubContext.inputs.prompt}
-</custom_instructions>`
-      );
+${context.githubContext.inputs.customInstructions}
+</custom_instructions>`;
+
+      // Insert custom instructions before <trigger_comment> tag
+      const triggerCommentIndex = basePrompt.indexOf("<trigger_comment>");
+      if (triggerCommentIndex !== -1) {
+        // Insert custom instructions right before <trigger_comment>
+        basePrompt =
+          basePrompt.slice(0, triggerCommentIndex) +
+          customInstructions +
+          "\n" +
+          basePrompt.slice(triggerCommentIndex);
+      } else {
+        // Fallback: append to end if no <trigger_comment> found
+        basePrompt = basePrompt + customInstructions;
+      }
     }
 
-    return defaultPrompt;
+    return basePrompt;
   },
 
   getSystemPrompt() {
