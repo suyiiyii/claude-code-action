@@ -457,12 +457,36 @@ export function generatePrompt(
   }
 
   // Tag mode
-  const defaultPrompt = generateDefaultPrompt(
+  let defaultPrompt = generateDefaultPrompt(
     context,
     githubData,
     useCommitSigning,
   );
 
+  // Inject custom_instructions before <trigger_comment> if provided
+  if (context.githubContext?.inputs?.customInstructions) {
+    const triggerCommentIndex = defaultPrompt.indexOf("<trigger_comment>");
+    if (triggerCommentIndex !== -1) {
+      defaultPrompt =
+        defaultPrompt.slice(0, triggerCommentIndex) +
+        `
+<custom_instructions>
+${context.githubContext.inputs.customInstructions}
+</custom_instructions>
+` +
+        defaultPrompt.slice(triggerCommentIndex);
+    } else {
+      defaultPrompt =
+        defaultPrompt +
+        `
+
+<custom_instructions>
+${context.githubContext.inputs.customInstructions}
+</custom_instructions>`;
+    }
+  }
+
+  // Append prompt as custom instructions at the end (existing behavior)
   if (context.githubContext?.inputs?.prompt) {
     return (
       defaultPrompt +
