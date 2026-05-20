@@ -306,6 +306,71 @@ describe("generatePrompt", () => {
     expect(prompt).not.toContain("CUSTOM INSTRUCTIONS");
   });
 
+  test("should inject custom_instructions before trigger comment in tag mode", async () => {
+    const envVars: PreparedContext = {
+      repository: "owner/repo",
+      claudeCommentId: "12345",
+      triggerPhrase: "@claude",
+      eventData: {
+        eventName: "issue_comment",
+        commentId: "67890",
+        isPR: false,
+        issueNumber: "123",
+        baseBranch: "main",
+        claudeBranch: "claude/issue-67890-20240101-1200",
+        commentBody: "@claude please fix this",
+      },
+      githubContext: {
+        inputs: {
+          prompt: "",
+          customInstructions: "Always run lint and tests.",
+        },
+      } as any,
+    };
+
+    const prompt = await generatePrompt(envVars, mockGitHubData, false, "tag");
+
+    expect(prompt).toContain(`<custom_instructions>
+Always run lint and tests.
+</custom_instructions>`);
+    expect(prompt.indexOf("Always run lint and tests.")).toBeLessThan(
+      prompt.indexOf("<trigger_comment>"),
+    );
+  });
+
+  test("should keep prompt as trailing custom instructions in tag mode", async () => {
+    const envVars: PreparedContext = {
+      repository: "owner/repo",
+      claudeCommentId: "12345",
+      triggerPhrase: "@claude",
+      eventData: {
+        eventName: "issue_comment",
+        commentId: "67890",
+        isPR: false,
+        issueNumber: "123",
+        baseBranch: "main",
+        claudeBranch: "claude/issue-67890-20240101-1200",
+        commentBody: "@claude please fix this",
+      },
+      githubContext: {
+        inputs: {
+          prompt: "Focus on security.",
+          customInstructions: "Always run lint and tests.",
+        },
+      } as any,
+    };
+
+    const prompt = await generatePrompt(envVars, mockGitHubData, false, "tag");
+
+    expect(prompt.indexOf("Always run lint and tests.")).toBeLessThan(
+      prompt.indexOf("<trigger_comment>"),
+    );
+    expect(prompt.trim().endsWith(`</custom_instructions>`)).toBe(true);
+    expect(prompt).toContain(`<custom_instructions>
+Focus on security.
+</custom_instructions>`);
+  });
+
   test("should use override_prompt when provided", async () => {
     const envVars: PreparedContext = {
       repository: "owner/repo",

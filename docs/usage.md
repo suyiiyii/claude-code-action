@@ -57,6 +57,7 @@ jobs:
 | `anthropic_api_key`              | Anthropic API key (required for direct API, not needed for Bedrock/Vertex)                                                                                                                                                             | No\*     | -             |
 | `claude_code_oauth_token`        | Claude Code OAuth token (alternative to anthropic_api_key)                                                                                                                                                                             | No\*     | -             |
 | `prompt`                         | Instructions for Claude. Can be a direct prompt or custom template for automation workflows                                                                                                                                            | No       | -             |
+| `custom_instructions`            | Additional instructions to inject into tag mode prompts before the triggering user request. Does not trigger agent mode                                                                                                                | No       | ""            |
 | `track_progress`                 | Force tag mode with tracking comments. Only works with specific PR/issue events. Preserves GitHub context                                                                                                                              | No       | `false`       |
 | `include_fix_links`              | Include 'Fix this' links in PR code review feedback that open Claude Code with context to fix the identified issue                                                                                                                     | No       | `true`        |
 | `claude_args`                    | Additional [arguments to pass directly to Claude CLI](https://docs.claude.com/en/docs/claude-code/cli-reference#cli-flags) (e.g., `--max-turns 10 --model claude-4-0-sonnet-20250805`)                                                 | No       | ""            |
@@ -89,19 +90,18 @@ jobs:
 
 These inputs are deprecated and will be removed in a future version:
 
-| Input                 | Description                                                                                  | Migration Path                                                 |
-| --------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| `mode`                | **DEPRECATED**: Mode is now automatically detected based on workflow context                 | Remove this input; the action auto-detects the correct mode    |
-| `direct_prompt`       | **DEPRECATED**: Use `prompt` instead                                                         | Replace with `prompt`                                          |
-| `override_prompt`     | **DEPRECATED**: Use `prompt` with template variables or `claude_args` with `--system-prompt` | Use `prompt` for templates or `claude_args` for system prompts |
-| `custom_instructions` | **DEPRECATED**: Use `claude_args` with `--system-prompt` or include in `prompt`              | Move instructions to `prompt` or use `claude_args`             |
-| `max_turns`           | **DEPRECATED**: Use `claude_args` with `--max-turns` instead                                 | Use `claude_args: "--max-turns 5"`                             |
-| `model`               | **DEPRECATED**: Use `claude_args` with `--model` instead                                     | Use `claude_args: "--model claude-4-0-sonnet-20250805"`        |
-| `fallback_model`      | **DEPRECATED**: Use `claude_args` with fallback configuration                                | Configure fallback in `claude_args` or `settings`              |
-| `allowed_tools`       | **DEPRECATED**: Use `claude_args` with `--allowedTools` instead                              | Use `claude_args: "--allowedTools Edit,Read,Write"`            |
-| `disallowed_tools`    | **DEPRECATED**: Use `claude_args` with `--disallowedTools` instead                           | Use `claude_args: "--disallowedTools WebSearch"`               |
-| `mcp_config`          | **DEPRECATED**: Use `claude_args` with `--mcp-config` instead                                | Use `claude_args: "--mcp-config '{...}'"`                      |
-| `claude_env`          | **DEPRECATED**: Use `settings` with env configuration                                        | Configure environment in `settings` JSON                       |
+| Input              | Description                                                                                  | Migration Path                                                 |
+| ------------------ | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `mode`             | **DEPRECATED**: Mode is now automatically detected based on workflow context                 | Remove this input; the action auto-detects the correct mode    |
+| `direct_prompt`    | **DEPRECATED**: Use `prompt` instead                                                         | Replace with `prompt`                                          |
+| `override_prompt`  | **DEPRECATED**: Use `prompt` with template variables or `claude_args` with `--system-prompt` | Use `prompt` for templates or `claude_args` for system prompts |
+| `max_turns`        | **DEPRECATED**: Use `claude_args` with `--max-turns` instead                                 | Use `claude_args: "--max-turns 5"`                             |
+| `model`            | **DEPRECATED**: Use `claude_args` with `--model` instead                                     | Use `claude_args: "--model claude-4-0-sonnet-20250805"`        |
+| `fallback_model`   | **DEPRECATED**: Use `claude_args` with fallback configuration                                | Configure fallback in `claude_args` or `settings`              |
+| `allowed_tools`    | **DEPRECATED**: Use `claude_args` with `--allowedTools` instead                              | Use `claude_args: "--allowedTools Edit,Read,Write"`            |
+| `disallowed_tools` | **DEPRECATED**: Use `claude_args` with `--disallowedTools` instead                           | Use `claude_args: "--disallowedTools WebSearch"`               |
+| `mcp_config`       | **DEPRECATED**: Use `claude_args` with `--mcp-config` instead                                | Use `claude_args: "--mcp-config '{...}'"`                      |
+| `claude_env`       | **DEPRECATED**: Use `settings` with env configuration                                        | Configure environment in `settings` JSON                       |
 
 \*Required when using direct Anthropic API (default and when not using Bedrock or Vertex)
 
@@ -132,9 +132,9 @@ For a comprehensive guide on migrating from v0.x to v1.0, including step-by-step
 - uses: anthropics/claude-code-action@v1
   with:
     anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+    custom_instructions: "Focus on security"
     claude_args: |
       --max-turns 10
-      --system-prompt "Focus on security"
 ```
 
 #### Automation Workflows

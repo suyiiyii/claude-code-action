@@ -14,19 +14,18 @@ This guide helps you migrate from Claude Code Action v0.x to v1.0. The new versi
 
 The following inputs have been deprecated and replaced:
 
-| Deprecated Input      | Replacement                          | Notes                                         |
-| --------------------- | ------------------------------------ | --------------------------------------------- |
-| `mode`                | Auto-detected                        | Action automatically chooses based on context |
-| `direct_prompt`       | `prompt`                             | Direct drop-in replacement                    |
-| `override_prompt`     | `prompt`                             | Use GitHub context variables instead          |
-| `custom_instructions` | `claude_args: --system-prompt`       | Move to CLI arguments                         |
-| `max_turns`           | `claude_args: --max-turns`           | Use CLI format                                |
-| `model`               | `claude_args: --model`               | Specify via CLI                               |
-| `allowed_tools`       | `claude_args: --allowedTools`        | Use CLI format                                |
-| `disallowed_tools`    | `claude_args: --disallowedTools`     | Use CLI format                                |
-| `claude_env`          | `settings` with env object           | Use settings JSON                             |
-| `mcp_config`          | `claude_args: --mcp-config`          | Pass MCP config via CLI arguments             |
-| `timeout_minutes`     | Use GitHub Actions `timeout-minutes` | Configure at job level instead of input level |
+| Deprecated Input   | Replacement                          | Notes                                         |
+| ------------------ | ------------------------------------ | --------------------------------------------- |
+| `mode`             | Auto-detected                        | Action automatically chooses based on context |
+| `direct_prompt`    | `prompt`                             | Direct drop-in replacement                    |
+| `override_prompt`  | `prompt`                             | Use GitHub context variables instead          |
+| `max_turns`        | `claude_args: --max-turns`           | Use CLI format                                |
+| `model`            | `claude_args: --model`               | Specify via CLI                               |
+| `allowed_tools`    | `claude_args: --allowedTools`        | Use CLI format                                |
+| `disallowed_tools` | `claude_args: --disallowedTools`     | Use CLI format                                |
+| `claude_env`       | `settings` with env object           | Use settings JSON                             |
+| `mcp_config`       | `claude_args: --mcp-config`          | Pass MCP config via CLI arguments             |
+| `timeout_minutes`  | Use GitHub Actions `timeout-minutes` | Configure at job level instead of input level |
 
 ## Migration Examples
 
@@ -50,9 +49,9 @@ The following inputs have been deprecated and replaced:
 - uses: anthropics/claude-code-action@v1
   with:
     anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+    custom_instructions: "Follow our coding standards"
     claude_args: |
       --max-turns 10
-      --system-prompt "Follow our coding standards"
       --allowedTools Edit,Read,Write
 ```
 
@@ -330,7 +329,6 @@ You can also pass MCP configuration from a file:
 - [ ] Remove `mode` input (auto-detected now)
 - [ ] Replace `direct_prompt` with `prompt`
 - [ ] Replace `override_prompt` with `prompt` using GitHub context
-- [ ] Move `custom_instructions` to `claude_args` with `--system-prompt`
 - [ ] Convert `max_turns` to `claude_args` with `--max-turns`
 - [ ] Convert `model` to `claude_args` with `--model`
 - [ ] Convert `allowed_tools` to `claude_args` with `--allowedTools`

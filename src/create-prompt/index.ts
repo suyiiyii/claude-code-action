@@ -457,11 +457,29 @@ export function generatePrompt(
   }
 
   // Tag mode
-  const defaultPrompt = generateDefaultPrompt(
+  let defaultPrompt = generateDefaultPrompt(
     context,
     githubData,
     useCommitSigning,
   );
+
+  if (context.githubContext?.inputs?.customInstructions) {
+    const customInstructions = `
+<custom_instructions>
+${context.githubContext.inputs.customInstructions}
+</custom_instructions>
+`;
+    const triggerCommentIndex = defaultPrompt.indexOf("<trigger_comment>");
+
+    if (triggerCommentIndex === -1) {
+      defaultPrompt = `${defaultPrompt}\n${customInstructions}`;
+    } else {
+      defaultPrompt =
+        defaultPrompt.slice(0, triggerCommentIndex) +
+        customInstructions +
+        defaultPrompt.slice(triggerCommentIndex);
+    }
+  }
 
   if (context.githubContext?.inputs?.prompt) {
     return (

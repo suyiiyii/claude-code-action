@@ -14,6 +14,7 @@ describe("detectMode with enhanced routing", () => {
     actor: "test-user",
     inputs: {
       prompt: "",
+      customInstructions: "",
       triggerPhrase: "@claude",
       assigneeTrigger: "",
       labelTrigger: "",
@@ -161,6 +162,25 @@ describe("detectMode with enhanced routing", () => {
         } as any,
         entityNumber: 1,
         isPR: false,
+      };
+
+      expect(detectMode(context)).toBe("tag");
+    });
+
+    it("should not use custom_instructions as an agent-mode trigger", () => {
+      const context: GitHubContext = {
+        ...baseContext,
+        eventName: "issue_comment",
+        payload: {
+          issue: { number: 1, body: "Test" },
+          comment: { body: "@claude help" },
+        } as any,
+        entityNumber: 1,
+        isPR: false,
+        inputs: {
+          ...baseContext.inputs,
+          customInstructions: "Always run lint and tests.",
+        },
       };
 
       expect(detectMode(context)).toBe("tag");

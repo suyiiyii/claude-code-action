@@ -151,25 +151,23 @@ prompt: "Review this PR for security vulnerabilities"
 # (no prompt provided)
 ```
 
-### What happened to `direct_prompt` and `custom_instructions`?
+### What happened to `direct_prompt`?
 
-**These inputs are deprecated in v1.0:**
+**This input is deprecated in v1.0:**
 
 - **`direct_prompt`** → Use `prompt` instead
-- **`custom_instructions`** → Use `claude_args` with `--system-prompt`
 
 Migration examples:
 
 ```yaml
 # Old (v0.x)
 direct_prompt: "Review this PR"
-custom_instructions: "Focus on security"
 
 # New (v1.0)
 prompt: "Review this PR"
-claude_args: |
-  --system-prompt "Focus on security"
 ```
+
+`custom_instructions` is still available for tag mode when you want repository-level instructions without using `prompt` as an agent-mode trigger.
 
 ### Why doesn't Claude execute my bash commands?
 
