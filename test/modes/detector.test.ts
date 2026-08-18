@@ -180,6 +180,25 @@ describe("detectMode with enhanced routing", () => {
       expect(detectMode(context)).toBe("tag");
     });
 
+    it("should not use custom_instructions as an agent-mode trigger", () => {
+      const context: GitHubContext = {
+        ...baseContext,
+        eventName: "issue_comment",
+        payload: {
+          issue: { number: 1, body: "Test" },
+          comment: { body: "@claude help" },
+        } as any,
+        entityNumber: 1,
+        isPR: false,
+        inputs: {
+          ...baseContext.inputs,
+          customInstructions: "Always run lint and tests.",
+        },
+      };
+
+      expect(detectMode(context)).toBe("tag");
+    });
+
     it("should use agent mode for issue_comment with prompt provided", () => {
       const context: GitHubContext = {
         ...baseContext,
